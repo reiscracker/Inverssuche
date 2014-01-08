@@ -12,13 +12,17 @@ class Person {
 
 	private:
 		int _id;
-		string name, vorname;
-		string telefonPrivat, telefonDienstlich;
-		string handyPrivat, handyDienstlich;
-		string faxPrivat, faxDienstlich;
+		string _name, _vorname;
+		string _telefonPrivat, _telefonDienstlich;
+		string _handyPrivat, _handyDienstlich;
+		string _faxPrivat, _faxDienstlich;
 
 	public:
-		Person(const string const *personenDaten);
+		Person(const string *personenDaten);
+		Person(int id, string name, string vorname, string telefonPrivat,
+			string telefonDienstlich, string handyPrivat, string handyDienstlich,
+			string faxPrivat, string faxDienstlich);
+
 		string ausgabe() const;
-}
+};
 
