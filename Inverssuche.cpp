@@ -1,5 +1,5 @@
 /* 08.01.2014
- * Author: Christine Hecht <s	@htw-berlin.de>
+ * Author: Christine Hecht <s0539719@htw-berlin.de>
  * Author: Simon Arnold <s0539710@htw-berlin.de>
  *
  * Dieses Programm realisiert eine Inverssuche durch einen Baum von Telefonnummern. Eine Liste von Nummern wird
@@ -14,14 +14,14 @@ using namespace std;
 #include <vector>
 #include "person.h"
 
-list<Person> createListFromFile(string filename);
+list<Person*> createListFromFile(string filename);
 vector<string> readValuesFromLine(string line);
 
 int main(int argc, const char* argv[]) {
 	cout << "Programm gestartet" << endl;
 	
 	/* Liste in der die Personen aus der Datei gespeichert werden */
-	list<Person> personen;
+	list<Person*> personen;
 
 	/* Es muss mindestens eine Datei angegeben sein um diese zu öffnen */
 	if (argc > 1) {
@@ -31,12 +31,23 @@ int main(int argc, const char* argv[]) {
 		}
 		catch (runtime_error e) {
 			cout << e.what() << endl;
+			// An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein free notwendig 
+			return 0;
+		}
+		
+		/* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
+		
+
+		for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
+			free(*i);
+			*i = nullptr;
 		}
 	}
 
 }
 
-list<Person> createListFromFile(string filename) {
+list<Person*> createListFromFile(string filename) {
+	list<Person*> personen;
 	ifstream readFile;
 	
 	/* fstream benötigt ein c-style char Array als Variable für den Dateinamen */
@@ -47,21 +58,34 @@ list<Person> createListFromFile(string filename) {
 	}
 
 	/* Die Datei kann an diesem Punkt gelesen werden */
-	string line;
 	/* Erste Zeile mit den Namen der Werte lesen und diese speichern */
+	string line;
 	getline(readFile, line);
 	if (line.empty()) {
-		throw runtime_error("Error: Datei '" + filename + "' enthält keine Daten.");
+		throw runtime_error("Error: Datei '" + filename + "' enthält keine Keys in der ersten Zeile.");
 	}
-	vector<string> identifiers;
+	vector<string> keys = readValuesFromLine(line);
 
+	/* Jede Zeile wird gelesen, von readValuesFromFile in ihre einzelnen Werte zerlegt und anschließend als Paare in ein
+ * 		Objekt der Klasse Person gespeichert */
 	while ( getline(readFile, line) ) {
+		personen.push_back(new Person); 	
+
+		vector<string> values = readValuesFromLine(line);	
 		
+		/* Paare mit den zugehörigen Keys und Werten werden angelegt */
+		vector<string>::iterator keysIterator = keys.begin();
+		vector<string>::iterator valuesIterator = values.begin();
+		while (keysIterator < keys.end() && valuesIterator < values.end()) {
+			/* Speichern der Werte in das Person-Objekt */
+			personen.back()->addValue(*keysIterator, *valuesIterator);
+			keysIterator++;
+			valuesIterator++;
+		}
 	}	
 	
 	readFile.close();
 	
-	list<Person> personen;
 	return personen;
 
 }
@@ -72,7 +96,6 @@ vector<string> readValuesFromLine(string line) {
 	int commaPosition = 0, valueStartPosition = 0;
 	
 	while ( (commaPosition = line.find(",", commaPosition)) != -1 ) {
-		cout << "Komma bei " << commaPosition << endl;
 		/* Extrahiert die Werte und speichert sie */
 		values.push_back(line.substr(valueStartPosition, commaPosition - valueStartPosition));	
 	
@@ -81,8 +104,7 @@ vector<string> readValuesFromLine(string line) {
 
 		commaPosition++;
 	}
-	for (vector<string>::iterator i = values.begin(); i < values.end(); i++) {
-		cout << *i << ",";
-	}
+	/* Letzter Wert, der aufgrund des fehlenden Kommas nicht gefunden wird, wird hinzugefügt */
+	values.push_back(line.substr(valueStartPosition, line.size() - valueStartPosition - 1));
 	return 	values;
 }
