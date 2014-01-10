@@ -7,9 +7,10 @@
 */
 using namespace std;
 #include <string>
+#include <map>
 
 class Person {
-
+/*
 	private:
 		int _id;
 		string _name, _vorname;
@@ -24,5 +25,13 @@ class Person {
 			string faxPrivat, string faxDienstlich);
 
 		string ausgabe() const;
+*/
+
+	private:
+		map<string, string> _values;
+
+	public:
+		void addValue(pair<string, string> value);
+		string printValues();	
 };
 

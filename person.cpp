@@ -10,6 +10,7 @@ using namespace std;
 #include <iostream>
 #include <iomanip>
 
+/*
 Person::Person(const string const *personenDaten) :
 	_id(*personenDaten[0]), _name(*personenDaten[1]), _vorname(*personenDaten[2]), _telefonPrivat(*personenDaten[3]),
 	_telefonDienstlich(*personenDaten[4]), _handyPrivat(*personenDaten[5]), _handyDienstlich(*personenDaten[6]),
@@ -36,4 +37,15 @@ string Person::ausgabe() {
 	cout << setw(25) << "Handy dienstlich:" << _handyDienstlich << endl; 
 	cout << setw(25) << "Fax privat:" << _faxPrivat << endl; 
 	cout << setw(25) << "Fax dienstlich:" << _faxDienstlich << endl; 
+}
+*/
+void Person::addValue(string identifier, string value) {
+	_values.insert(pair<string, string>(identifier, value));	
+}
+
+void Person::printValues() {
+	map<string, string>::iterator valueIterator = _values.begin();
+	for (valueIterator; valueIterator != _values.end(); valueIterator++) {
+		cout << setw(25) << valueIterator->first << ":" << valueIterator->second << endl;
+	}
 }
