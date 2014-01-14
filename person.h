@@ -10,23 +10,6 @@ using namespace std;
 #include <map>
 
 class Person {
-/*
-	private:
-		int _id;
-		string _name, _vorname;
-		string _telefonPrivat, _telefonDienstlich;
-		string _handyPrivat, _handyDienstlich;
-		string _faxPrivat, _faxDienstlich;
-
-	public:
-		Person(const string *personenDaten);
-		Person(int id, string name, string vorname, string telefonPrivat,
-			string telefonDienstlich, string handyPrivat, string handyDienstlich,
-			string faxPrivat, string faxDienstlich);
-
-		string ausgabe() const;
-*/
-
 	private:
 		map<string, string> _values;
 

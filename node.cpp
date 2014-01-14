@@ -9,17 +9,33 @@
 
 
 Node::Node(int digit) : _digit(digit) {
-
+    _nextDigits
 }
 
-void Node::createNextDigit() {
-
+Node::~Node() {
+    /* Wird in Inverssuche.cpp "befreit" */
+    _personWithThisNumber = NULL;
+    
+    /* Alle angrenzenden Ziffern löschen */
+    for (list<Node>::iterator i = _nextDigits.begin(); i != _nextDigits.end(); i++) {
+        delete(i);
+    }
+    cout << "Node " + _digit + " deleted" << endl;
+}
+Node* Node::createNextDigit(int digit) {
+    Node* newNode = new Node(digit);
+    _nextDigits.push_back(newNode);
+    return newNode;
 }
 
-Person* Node::processNumber(string number) {
+Person* Node::addNumber(string number, Person* numberOwner) {
 		
 }
 
-void Node::setPersonWithThisNumber() {
+void Node::getPerson(string number) {
+    
+}
 
+int Node::getDigit() {
+    return _digit;
 }

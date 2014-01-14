@@ -36,11 +36,9 @@ int main(int argc, const char* argv[]) {
 		}
 		
 		/* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
-		
-
 		for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
 			free(*i);
-			*i = nullptr;
+			*i = NULL;
 		}
 	}
 

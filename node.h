@@ -17,14 +17,28 @@ class Node {
 
 	private:
 		Node(int digit);
-
+                ~Node();
+                /* Die Ziffer, die diese Node enthält */
 		const int _digit;
+                
+                /* Die Node-Objekte mit Ziffern, die von hier aus weiterführen */
 		list<Node> _nextDigits;
-		Person* _personWithThisNumber;
+                
+                /* Enthält einen Zeiger auf ein Person-Objekt, falls die Nummer an diesem Punkt 
+                   einer Person gehört */
+		Person* _personWithThisNumber = NULL;
 
-		void createNextDigit();
+                /* Fügt ein neues Node-Objekt der Liste der nächsten Ziffern hinzu und gibt 
+                   dieses Objekt zurück */
+		Node* createNextDigit();
 
 	public:
-		Person* processNumber(string number);	
-		void setPersonWithThisNumber();
+                /* Fügt eine Nummer zum Baum hinzu und setzt den Zeiger auf den Besitzer der Nummer */
+		void addNumber(string number, Person* numberOwner);	
+                
+                /* Versucht, einen Zeiger auf den Besitzer einer Nummer zu liefern */
+                Person* getPerson(string number);
+                
+                int getDigit();
+                    
 }
