@@ -12,33 +12,34 @@ using namespace std;
 #include <list>
 #include <string>
 #include "person.h"
+//class Person;
 
 class Node {
 
 	private:
-		Node(int digit);
-                ~Node();
                 /* Die Ziffer, die diese Node enthält */
-		const int _digit;
+		const char _digit;
                 
                 /* Die Node-Objekte mit Ziffern, die von hier aus weiterführen */
-		list<Node> _nextDigits;
+		list<Node*> _nextDigits;
                 
                 /* Enthält einen Zeiger auf ein Person-Objekt, falls die Nummer an diesem Punkt 
                    einer Person gehört */
 		Person* _personWithThisNumber = NULL;
 
-                /* Fügt ein neues Node-Objekt der Liste der nächsten Ziffern hinzu und gibt 
-                   dieses Objekt zurück */
-		Node* createNextDigit();
+                /* Findet das Objekt mit der nächsten Ziffer oder legt ein neues an */
+		Node* getNextDigit(char digit);
 
 	public:
-                /* Fügt eine Nummer zum Baum hinzu und setzt den Zeiger auf den Besitzer der Nummer */
-		void addNumber(string number, Person* numberOwner);	
+                Node(char digit);
+                ~Node();
+                /* Gibt eine Nummer so lang weiter, bis das passende Objekt zu dieser Nummer gefunden wurde. 
+                 * Diese Node erhält dann den Zeiger auf das Personen-Objekt */
+		void registerNumber(string number, Person* numberOwner);	
                 
                 /* Versucht, einen Zeiger auf den Besitzer einer Nummer zu liefern */
                 Person* getPerson(string number);
                 
-                int getDigit();
+                char getDigit();
                     
-}
+};

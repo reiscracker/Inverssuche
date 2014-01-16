@@ -12,36 +12,44 @@ using namespace std;
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include "person.h"
+#include "node.h"
+//#include "person.h"
+
 
 list<Person*> createListFromFile(string filename);
 vector<string> readValuesFromLine(string line);
+string normalizeNumber(string number);
+
+Node* const startingNode = new Node('+');
 
 int main(int argc, const char* argv[]) {
-	cout << "Programm gestartet" << endl;
+	cout << "Programmi gestartet" << endl;
 	
 	/* Liste in der die Personen aus der Datei gespeichert werden */
 	list<Person*> personen;
 
 	/* Es muss mindestens eine Datei angegeben sein um diese zu öffnen */
 	if (argc > 1) {
-		cout << "Argument gefunden. Versuche, Datei " << argv[1] << " zu öffnen." << endl;
-		try {
-			personen = createListFromFile(argv[1]);
-		}
-		catch (runtime_error e) {
-			cout << e.what() << endl;
-			// An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein free notwendig 
-			return 0;
-		}
+            cout << "Argument gefunden. Versuche, Datei " << argv[1] << " zu öffnen." << endl;
+            try {
+                personen = createListFromFile(argv[1]);
+            }
+            catch (runtime_error e) {
+                cout << e.what() << endl;
+                // An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein free notwendig 
+                return 0;
+            }
+        }
 		
-		/* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
-		for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
-			free(*i);
-			*i = NULL;
-		}
-	}
+            /* Versuche, eine nummer zu finden */
+        cout << "Versuche: 0157657302" << endl;
+        startingNode->getPerson(normalizeNumber("0157657302"))->printValues();
 
+            /* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
+            for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
+                    delete(*i);
+                    *i = NULL;
+            }
 }
 
 list<Person*> createListFromFile(string filename) {
@@ -67,19 +75,32 @@ list<Person*> createListFromFile(string filename) {
 	/* Jede Zeile wird gelesen, von readValuesFromFile in ihre einzelnen Werte zerlegt und anschließend als Paare in ein
  * 		Objekt der Klasse Person gespeichert */
 	while ( getline(readFile, line) ) {
-		personen.push_back(new Person); 	
+            Person* newPerson = new Person;
+            personen.push_back(newPerson); 	
 
-		vector<string> values = readValuesFromLine(line);	
-		
-		/* Paare mit den zugehörigen Keys und Werten werden angelegt */
-		vector<string>::iterator keysIterator = keys.begin();
-		vector<string>::iterator valuesIterator = values.begin();
-		while (keysIterator < keys.end() && valuesIterator < values.end()) {
-			/* Speichern der Werte in das Person-Objekt */
-			personen.back()->addValue(*keysIterator, *valuesIterator);
-			keysIterator++;
-			valuesIterator++;
-		}
+            vector<string> values = readValuesFromLine(line);	
+
+            /* Paare mit den zugehörigen Keys und Werten werden angelegt */
+            vector<string>::iterator keysIterator = keys.begin();
+            vector<string>::iterator valuesIterator = values.begin();
+            while (keysIterator < keys.end() && valuesIterator < values.end()) {
+                    /* Speichern der Werte in das Person-Objekt */
+                    personen.back()->addValue(*keysIterator, *valuesIterator);
+                    
+                    /* Jede Nummer wird mit dem aktuellen Personen-Objekt verknüpft
+                     * NOTE:
+                     * Eigentlich ist dieses Programm flexibel, was die Werte in der .csv Datei anbelangt.
+                     * Um die Telefonnummern zu identifizieren, muss allerdings angenommen werden, dass 
+                     * die Werte 3-8 der .csv Datei Telefonnummern sind */
+                    if (valuesIterator >= values.begin() + 3) {
+                        cout << "I think key: " << *keysIterator << " with value: " << *valuesIterator << " is a number." << endl;
+                        /* Nummer im Baum registrieren*/
+                        startingNode->registerNumber(normalizeNumber(*valuesIterator), personen.back());
+                    }
+                    
+                    keysIterator++;
+                    valuesIterator++;
+            }
 	}	
 	
 	readFile.close();
@@ -105,4 +126,12 @@ vector<string> readValuesFromLine(string line) {
 	/* Letzter Wert, der aufgrund des fehlenden Kommas nicht gefunden wird, wird hinzugefügt */
 	values.push_back(line.substr(valueStartPosition, line.size() - valueStartPosition - 1));
 	return 	values;
+}
+
+string normalizeNumber(string number) {
+    if (number.at(0) != '+') {
+        cout << "Normalizing " << number << " to " << "+"+number << endl;
+        return "+" + number;
+    }
+    else return number;
 }
