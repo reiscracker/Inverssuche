@@ -87,19 +87,28 @@ list<Person*> createListFromFile(string filename) {
             vector<string>::iterator valuesIterator = values.begin();
             
             while (keysIterator < keys.end() && valuesIterator < values.end()) {
-                    personen.back()->addValue(*keysIterator, *valuesIterator);
-                    
-                    /* Jede Nummer wird mit dem aktuellen Personen-Objekt verknüpft
-                     * Eigentlich ist dieses Programm flexibel, was die Werte in der .csv Datei anbelangt.
-                     * Um die Telefonnummern zu identifizieren, muss allerdings angenommen werden, dass 
-                     * die Werte 3-8 der .csv Datei Telefonnummern sind */
-                    if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
-                        cout << "I think key: " << *keysIterator << " with value: " << *valuesIterator << " is a number." << endl;
-                        /* Nummer im Baum registrieren*/
-                        tree->registerNumber(*valuesIterator, personen.back());
+                
+                // Sollte eine Nummer nicht gültig sein, so wird diese auch nicht zu einer Person hinzugefügt 
+                if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
+                    if (!tree->isNumber(*valuesIterator)) {
+                        keysIterator++;
+                        valuesIterator++;
+                        continue;
                     }
-                    keysIterator++;
-                    valuesIterator++;
+                }
+                
+                // Datenpaar zum aktuellen Personenobjekt hinzufügen
+                personen.back()->addValue(*keysIterator, *valuesIterator);
+
+               /* Jede Nummer wird mit dem aktuellen Personen-Objekt verknüpft.
+                * Eigentlich ist dieses Programm flexibel, was die Werte in der .csv Datei anbelangt.
+                * Um die Telefonnummern zu identifizieren, muss allerdings angenommen werden, dass 
+                * die Werte zwischen FIRSTNUMBERATTRIBUTE und LASTNUMBERATTRIBUTE der .csv Datei Telefonnummern sind */
+               if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
+                   tree->registerNumber(*valuesIterator, personen.back());
+               }
+               keysIterator++;
+               valuesIterator++;
             }
             
 	}	
@@ -122,41 +131,33 @@ vector<string> readValuesFromLine(string line) {
 		commaPosition++;
 	}
 	/* Letzter Wert, der aufgrund des fehlenden Kommas nicht gefunden wird, wird hinzugefügt */
-	values.push_back(line.substr(valueStartPosition, line.size() - valueStartPosition - 1));
+	values.push_back(line.substr(valueStartPosition, line.size() - valueStartPosition));
 	return 	values;
 }
 
 void userMenu() {
     bool running = true;
-    char menuChoice = 's';
+    string menuChoice = "";
     
     while (running) {
-        cout << "Hauptmenü\nSie können:\n Nach einer Nummer (s)uchen\n Den Graphen (a)nzeigen\n Das Programm (b)eenden" << endl;
-        cin >> menuChoice;
+        cout << "\nHauptmenü\nSie können:\n * Eine Nummer eingeben, um die zugehörige Person zu finden" <<
+                                        "\n * 'g' eingeben, um den Graphen anzuzeigen" <<
+                                        "\n * Nichts eingeben und bestätigen, um das Programm zu beenden" << 
+                                        "\n > ";
+        getline(cin, menuChoice);
 
-        switch (menuChoice) {
-            case 's': {
-                cout << "Bitte die zu suchende Nummer eingeben:\n> ";
-                string number;
-                cin >> number;
-                try {
-                        tree->getPerson(number)->printValues();
-                }
-                catch (runtime_error e) {
-                    cerr << e.what() << endl;
-                }
-                break;
+        if (menuChoice == "g") {
+            cout << "Noch nicht implementiert" << endl;
+        }
+        else if (menuChoice == "") {
+            running = false;
+        }
+        else {
+            try {
+                    tree->getPerson(menuChoice)->printValues();
             }
-            case 'a': {
-                cout << "Noch nicht implementiert" << endl;
-                break;
-            }
-            case 'b': {
-                running = false;
-                break;
-            }
-            default: {
-                break;
+            catch (runtime_error e) {
+                cerr << e.what() << endl;
             }
         }
     }

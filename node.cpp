@@ -45,7 +45,6 @@ Node* Node::getNextDigit(char digit) {
 
 void Node::registerNumber(string number, Person* numberOwner) {
     /* Prüfen, ob erste Ziffer auch der Ziffer dieses Objektes entspricht */
-    cout << "Ziffer an der ersten Stelle ist: " << number.at(0) << endl;
     if ((number.at(0)) != _digit) {
         throw runtime_error( string("Erste Ziffer der Nummer (") + number.at(0) + ") " +
                 "entspricht nicht Ziffer dieses Objektes (" + _digit + ") !");
@@ -56,14 +55,12 @@ void Node::registerNumber(string number, Person* numberOwner) {
     
     /* Sind wir an der letzten Ziffer angekommen? */
     if (number.length() == 1) {
-        cout << "Angekommen!!" << endl;
         _personWithThisNumber = numberOwner;
     }
     else {
 
         /* Erste Ziffer der Nummer "abschneiden" */
         number = number.substr(1, number.length());
-        cout << "Nummer ist jetzt: " << number << endl;
 
         /* Nummer an die nächste Ziffer weitergeben */
         getNextDigit(number.at(0))->registerNumber(number, numberOwner);
@@ -83,7 +80,7 @@ Person* Node::getPerson(string number) {
     if (number.length() == 1) {
         cout << "Angekommen!!" << endl;
         if (_personWithThisNumber == NULL) {
-            throw runtime_error("Keine passende Person gefunden!");
+            throw runtime_error("Keine passende Person gefunden!\n");
         }
         else {
                 return _personWithThisNumber;
@@ -92,17 +89,15 @@ Person* Node::getPerson(string number) {
     else {
         /* Wenn nicht, erste Ziffer der Nummer "abschneiden" */
         number = number.substr(1, number.length());
-        cout << "Nummer ist jetzt: " << number << endl;
 
         /* Die nächste Ziffer finden. Existiert keine, wird ein Fehler zurückgegeben */
         for (list<Node*>::iterator i = _nextDigits.begin(); i != _nextDigits.end(); i++ ) {
             if ((*i)->getDigit() == number.at(0)) {
-                cout << "Nächste Ziffer gefunden: " << number.at(0) << endl;
                 return (*i)->getPerson(number);
             }
         }
         
-        throw runtime_error( string("Konnte keinen passenden Knoten für Ziffer ") + number.at(0) + " finden!");
+        throw runtime_error( string("Die Rufnummer existiert nicht.\n"));
     }
 }
 

@@ -23,8 +23,8 @@ class Tree {
         Tree();
         ~Tree();
         
+        bool isNumber(const string& number);
         void registerNumber(string number, Person* numberOwner);
-        
         Person* getPerson(string number);
 
 };
