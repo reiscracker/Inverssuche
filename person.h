@@ -20,6 +20,7 @@ class Person {
 	public:
 		void addValue(string key, string value);
 		void printValues();	
+                string getName();
 };
 
 #endif

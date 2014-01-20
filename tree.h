@@ -27,6 +27,7 @@ class Tree {
         void registerNumber(string number, Person* numberOwner);
         Person* getPerson(string number);
 
+        void makeGraph();
 };
 
 #endif	/* TREE_H */

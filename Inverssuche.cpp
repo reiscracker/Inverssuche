@@ -147,7 +147,7 @@ void userMenu() {
         getline(cin, menuChoice);
 
         if (menuChoice == "g") {
-            cout << "Noch nicht implementiert" << endl;
+            tree->makeGraph();
         }
         else if (menuChoice == "") {
             running = false;

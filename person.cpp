@@ -34,3 +34,7 @@ void Person::printValues() {
 		cout << setw(25) << valueIterator->first << ":" << valueIterator->second << endl;
 	}
 }
+
+string Person::getName() {
+    return _values.at("Name");
+}

@@ -15,6 +15,7 @@ using namespace std;
 #include <list>
 #include <string>
 #include "person.h"
+#include <sstream>
 //class Person;
 
 class Node {
@@ -45,6 +46,7 @@ class Node {
                 
                 char getDigit();
                     
+                void addToGraphString(stringstream& nodes, stringstream& numberProgress, stringstream& labelString);
 };
 
 #endif

@@ -1,7 +1,6 @@
 
 
 #include <stdexcept>
-
 #include "tree.h"
 
 Tree::Tree() {
@@ -80,4 +79,9 @@ Person* Tree::getPerson(string number) {
     catch (runtime_error e) {           // Try-catch Block könnte hier weggelassen werden
         throw e;
     }
+}
+
+void Tree::makeGraph() {
+    stringstream nodes, numberProgress, labels;
+    _startingNode->addToGraphString(nodes, numberProgress, labels);
 }
