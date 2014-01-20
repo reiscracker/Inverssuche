@@ -8,6 +8,7 @@
 #include "node.h"
 #include <iostream>
 #include <stdlib.h>
+#include <stdexcept>
 
 Node::Node(char digit) : _digit(digit) {}
 
@@ -46,9 +47,11 @@ void Node::registerNumber(string number, Person* numberOwner) {
     /* Prüfen, ob erste Ziffer auch der Ziffer dieses Objektes entspricht */
     cout << "Ziffer an der ersten Stelle ist: " << number.at(0) << endl;
     if ((number.at(0)) != _digit) {
-        cerr << "Fehler: erste Ziffer der Nummer (" << number.at(0) <<
-                ") entspricht nicht Ziffer dieses Objektes (" << _digit << ")." << endl;
-        return;
+        throw runtime_error( string("Erste Ziffer der Nummer (") + number.at(0) + ") " +
+                "entspricht nicht Ziffer dieses Objektes (" + _digit + ") !");
+//        cerr << "Fehler: erste Ziffer der Nummer (" << number.at(0) <<
+//                ") entspricht nicht Ziffer dieses Objektes (" << _digit << ")." << endl;
+//        return;
     }
     
     /* Sind wir an der letzten Ziffer angekommen? */
@@ -72,15 +75,19 @@ Person* Node::getPerson(string number) {
     /* Prüfen, ob erste Ziffer auch der Ziffer dieses Objektes entspricht */
     cout << "Ziffer an der ersten Stelle ist: " << number.at(0) << endl;
     if ((number.at(0)) != _digit) {
-        cerr << "Fehler: erste Ziffer der Nummer (" << number.at(0) <<
-                ") entspricht nicht Ziffer dieses Objektes (" << _digit << ")." << endl;
-        return NULL;
+        throw runtime_error( string("Erste Ziffer der Nummer (") + number.at(0) + ") " +
+                "entspricht nicht Ziffer dieses Objektes (" + _digit + ") !");
     }
     
     /* Sind wir an der letzten Ziffer angekommen? */
     if (number.length() == 1) {
         cout << "Angekommen!!" << endl;
-        return _personWithThisNumber;
+        if (_personWithThisNumber == NULL) {
+            throw runtime_error("Keine passende Person gefunden!");
+        }
+        else {
+                return _personWithThisNumber;
+        }
     }
     else {
         /* Wenn nicht, erste Ziffer der Nummer "abschneiden" */
@@ -95,7 +102,7 @@ Person* Node::getPerson(string number) {
             }
         }
         
-        return NULL;
+        throw runtime_error( string("Konnte keinen passenden Knoten für Ziffer ") + number.at(0) + " finden!");
     }
 }
 

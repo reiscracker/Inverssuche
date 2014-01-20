@@ -5,6 +5,10 @@
  * Objekte der Klasse Person enthalten genau eine Person mit ihren Telefonnummern.
  * Diese Objekte werden im Hauptprogramm zu einer Liste verknüpft, um die eingelesenen Personen zu speichern.
 */
+#ifndef PERSON_H
+#define	PERSON_H
+
+
 using namespace std;
 #include <string>
 #include <map>
@@ -18,3 +22,4 @@ class Person {
 		void printValues();	
 };
 
+#endif

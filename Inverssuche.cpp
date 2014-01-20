@@ -12,18 +12,19 @@ using namespace std;
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include "node.h"
-//#include "person.h"
+#include "tree.h"
 
+#define FIRSTNUMBERATTRIBUTE 3
+#define LASTNUMBERATTRIBUTE 8
 
 list<Person*> createListFromFile(string filename);
 vector<string> readValuesFromLine(string line);
-string normalizeNumber(string number);
+void userMenu();
 
-Node* const startingNode = new Node('+');
+Tree* const tree = new Tree();
 
 int main(int argc, const char* argv[]) {
-	cout << "Programmi gestartet" << endl;
+	cout << "Programm gestartet" << endl;
 	
 	/* Liste in der die Personen aus der Datei gespeichert werden */
 	list<Person*> personen;
@@ -36,22 +37,23 @@ int main(int argc, const char* argv[]) {
             }
             catch (runtime_error e) {
                 cout << e.what() << endl;
-                // An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein free notwendig 
+                // An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein delete notwendig 
                 return 0;
             }
         }
 		
-            /* Versuche, eine nummer zu finden */
-        cout << "Versuche: 0157657302" << endl;
-        startingNode->getPerson(normalizeNumber("0157657302"))->printValues();
+        userMenu();
 
-            /* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
-            for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
-                    delete(*i);
-                    *i = NULL;
-            }
+        delete(tree);
+        
+        /* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
+        for (list<Person*>::iterator i = personen.begin(); i != personen.end(); i++) {
+                delete(*i);
+                *i = NULL;
+        }
 }
 
+/* Erstellt eine Liste von Person-Objekten aus einer .csv Datei */
 list<Person*> createListFromFile(string filename) {
 	list<Person*> personen;
 	ifstream readFile;
@@ -63,8 +65,8 @@ list<Person*> createListFromFile(string filename) {
 		throw runtime_error("Error: Datei '" + filename + "' konnte nicht geöffnet werden.\n\tExistiert die Datei und besitzen Sie die nötigen Rechte?");
 	}
 
-	/* Die Datei kann an diesem Punkt gelesen werden */
-	/* Erste Zeile mit den Namen der Werte lesen und diese speichern */
+	/* Die Datei kann an diesem Punkt gelesen werden
+	 * Erste Zeile mit den Namen der Werte lesen und diese speichern */
 	string line;
 	getline(readFile, line);
 	if (line.empty()) {
@@ -73,7 +75,7 @@ list<Person*> createListFromFile(string filename) {
 	vector<string> keys = readValuesFromLine(line);
 
 	/* Jede Zeile wird gelesen, von readValuesFromFile in ihre einzelnen Werte zerlegt und anschließend als Paare in ein
- * 		Objekt der Klasse Person gespeichert */
+        *  Objekt der Klasse Person gespeichert */
 	while ( getline(readFile, line) ) {
             Person* newPerson = new Person;
             personen.push_back(newPerson); 	
@@ -83,30 +85,26 @@ list<Person*> createListFromFile(string filename) {
             /* Paare mit den zugehörigen Keys und Werten werden angelegt */
             vector<string>::iterator keysIterator = keys.begin();
             vector<string>::iterator valuesIterator = values.begin();
+            
             while (keysIterator < keys.end() && valuesIterator < values.end()) {
-                    /* Speichern der Werte in das Person-Objekt */
                     personen.back()->addValue(*keysIterator, *valuesIterator);
                     
                     /* Jede Nummer wird mit dem aktuellen Personen-Objekt verknüpft
-                     * NOTE:
                      * Eigentlich ist dieses Programm flexibel, was die Werte in der .csv Datei anbelangt.
                      * Um die Telefonnummern zu identifizieren, muss allerdings angenommen werden, dass 
                      * die Werte 3-8 der .csv Datei Telefonnummern sind */
-                    if (valuesIterator >= values.begin() + 3) {
+                    if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
                         cout << "I think key: " << *keysIterator << " with value: " << *valuesIterator << " is a number." << endl;
                         /* Nummer im Baum registrieren*/
-                        startingNode->registerNumber(normalizeNumber(*valuesIterator), personen.back());
+                        tree->registerNumber(*valuesIterator, personen.back());
                     }
-                    
                     keysIterator++;
                     valuesIterator++;
             }
+            
 	}	
-	
 	readFile.close();
-	
 	return personen;
-
 }
 
 /* Findet die Stellen, an denen ein Komma steht, sodass die Zeile dort in die einzelnen Werte aufgeteilt werden kann */
@@ -128,10 +126,38 @@ vector<string> readValuesFromLine(string line) {
 	return 	values;
 }
 
-string normalizeNumber(string number) {
-    if (number.at(0) != '+') {
-        cout << "Normalizing " << number << " to " << "+"+number << endl;
-        return "+" + number;
+void userMenu() {
+    bool running = true;
+    char menuChoice = 's';
+    
+    while (running) {
+        cout << "Hauptmenü\nSie können:\n Nach einer Nummer (s)uchen\n Den Graphen (a)nzeigen\n Das Programm (b)eenden" << endl;
+        cin >> menuChoice;
+
+        switch (menuChoice) {
+            case 's': {
+                cout << "Bitte die zu suchende Nummer eingeben:\n> ";
+                string number;
+                cin >> number;
+                try {
+                        tree->getPerson(number)->printValues();
+                }
+                catch (runtime_error e) {
+                    cerr << e.what() << endl;
+                }
+                break;
+            }
+            case 'a': {
+                cout << "Noch nicht implementiert" << endl;
+                break;
+            }
+            case 'b': {
+                running = false;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
-    else return number;
 }

@@ -8,6 +8,9 @@
  * bis der der letzten Ziffer einer Nummer entsprechende Knoten gefunden wurde.
  * Weiter kann jede Node einen Zeiger auf ein Person-Objekt halten, zu dem die Telefonnummer gehört.
  */
+#ifndef NODE_H
+#define	NODE_H
+
 using namespace std;
 #include <list>
 #include <string>
@@ -43,3 +46,5 @@ class Node {
                 char getDigit();
                     
 };
+
+#endif
