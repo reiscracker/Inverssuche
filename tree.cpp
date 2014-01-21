@@ -1,9 +1,9 @@
-
-
 #include <stdexcept>
 #include <fstream>
 #include <stdlib.h>
 #include "tree.h"
+
+#define MAXNUMBERLENGTH 15
 
 Tree::Tree() {
     _startingNode = new Node('+');
@@ -57,7 +57,7 @@ void Tree::normalizeNumber(string &number) {
     }
     
     /* Sollte die Nummer nun mehr als 15 Zeichen beinhalten, wird sie abgewiesen */
-    if (number.length() > 15) {
+    if (number.length() > MAXNUMBERLENGTH) {
         throw runtime_error("Fehler: Nummer enthält im E.164-Format mehr als 15 Zeichen");
     }
 }
