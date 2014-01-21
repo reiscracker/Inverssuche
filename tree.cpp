@@ -1,6 +1,8 @@
 
 
 #include <stdexcept>
+#include <fstream>
+#include <stdlib.h>
 #include "tree.h"
 
 Tree::Tree() {
@@ -82,6 +84,28 @@ Person* Tree::getPerson(string number) {
 }
 
 void Tree::makeGraph() {
-    stringstream nodes, numberProgress, labels;
+    stringstream nodes, labels;
+    string numberProgress;
+    
+    // In DOT lässt sich ein + nicht als Zeichen verwenden, also ändern wir + zu p
+    _startingNode->setDigit('p');
+    
+    // Jeder Knoten schreibt seine Daten in die Stringstreams nodes und labels
     _startingNode->addToGraphString(nodes, numberProgress, labels);
+    
+    _startingNode->setDigit('+');
+    
+    /* Die erstellten strings mit der dot-Sprache müssen in eine Datei geschrieben werden */
+    ofstream myStream;
+    try {
+        myStream.open("graph.tmp");
+        myStream << "digraph G {\n" << nodes.str() << "\n" << labels.str() << "\n}";
+    } catch(exception e) {
+        cerr << e.what();
+    }
+    myStream.close();
+    system("dot -Tpng graph.tmp -o graph.png");
+    system("rm graph.tmp");
+    system("eog graph.png");
+    
 }

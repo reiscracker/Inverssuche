@@ -105,29 +105,33 @@ char Node::getDigit() {
     return _digit;
 }
 
-void Node::addToGraphString(stringstream& nodes, stringstream& numberProgress, stringstream& labelString) {
+void Node::addToGraphString(stringstream& nodes, string numberProgress, stringstream& labelString) {
     /* Nodes string erweitern. Hier werden die Verknüpfungen beschrieben */
     
     /* Verknüpfung des vorherigen zu diesem Objekt herstellen */
-    if (numberProgress.str() != "") {
-        nodes << numberProgress.str() << string("->") << numberProgress.str() << _digit << string(";\n");
+    if (numberProgress != "") {
+        nodes << numberProgress << string("->") << numberProgress << _digit << string(";\n");
         cout << "Nodes is now: " << nodes.str() << endl;
     }
-    numberProgress << _digit;
-    cout << "Numberprogress is now: " << numberProgress.str() << endl;
+    numberProgress += _digit;
+    cout << "Numberprogress is now: " << numberProgress << endl;
     
     /* Label string ändern. Hier werden die label der einzelnen Knoten beschrieben */
-    labelString << numberProgress.str() << string(" [label=\"") << _digit << string("\"];\n");
+    labelString << numberProgress << string(" [label=\"") << _digit << string("\"];\n");
     
     /* Sollte eine Rufnummer hier enden, so wird die Person als eigener Knoten angefügt */
     if (_personWithThisNumber != NULL) {
-        nodes << numberProgress.str() << string("->") << _personWithThisNumber->getName() << string(";\n");
+        nodes << numberProgress << string("->") << _personWithThisNumber->getName() << string(";\n");
         labelString << _personWithThisNumber->getName() << string(" [label=\"") << _personWithThisNumber->getName() << string("\"];\n");
     }
     
-    cout << nodes.str() << ";" << numberProgress.str() << ";" << labelString.str() << endl;
+    cout <<"Labels:" << labelString.str() << endl;
     for (list<Node*>::iterator i = _nextDigits.begin(); i != _nextDigits.end(); i++ ) {
         (*i)->addToGraphString(nodes, numberProgress, labelString);
     }
     
+}
+
+void Node::setDigit(char newDigit) {
+        _digit = newDigit;
 }

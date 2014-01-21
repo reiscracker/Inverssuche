@@ -22,7 +22,7 @@ class Node {
 
 	private:
                 /* Die Ziffer, die diese Node enthält */
-		const char _digit;
+		char _digit;
                 
                 /* Die Node-Objekte mit Ziffern, die von hier aus weiterführen */
 		list<Node*> _nextDigits;
@@ -45,8 +45,9 @@ class Node {
                 Person* getPerson(string number);
                 
                 char getDigit();
-                    
-                void addToGraphString(stringstream& nodes, stringstream& numberProgress, stringstream& labelString);
+                void setDigit(char newDigit);    
+                
+                void addToGraphString(stringstream& nodes, string numberProgress, stringstream& labelString);
 };
 
 #endif
