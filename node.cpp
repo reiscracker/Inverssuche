@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-Node::Node(char digit) : _digit(digit) {}
+Node::Node(char digit) : _digit(digit), _personWithThisNumber(NULL) {}
 
 Node::~Node() {
     _personWithThisNumber = NULL;
@@ -48,9 +48,6 @@ void Node::registerNumber(string number, Person* numberOwner) {
     if ((number.at(0)) != _digit) {
         throw runtime_error( string("Erste Ziffer der Nummer (") + number.at(0) + ") " +
                 "entspricht nicht Ziffer dieses Objektes (" + _digit + ") !");
-//        cerr << "Fehler: erste Ziffer der Nummer (" << number.at(0) <<
-//                ") entspricht nicht Ziffer dieses Objektes (" << _digit << ")." << endl;
-//        return;
     }
     
     /* Sind wir an der letzten Ziffer angekommen? */
@@ -64,7 +61,6 @@ void Node::registerNumber(string number, Person* numberOwner) {
 
         /* Nummer an die nächste Ziffer weitergeben */
         getNextDigit(number.at(0))->registerNumber(number, numberOwner);
-
     }
 }
 
@@ -106,26 +102,23 @@ char Node::getDigit() {
 }
 
 void Node::addToGraphString(stringstream& nodes, string numberProgress, stringstream& labelString) {
-    /* Nodes string erweitern. Hier werden die Verknüpfungen beschrieben */
+    
     
     /* Verknüpfung des vorherigen zu diesem Objekt herstellen */
     if (numberProgress != "") {
-        nodes << numberProgress << string("->") << numberProgress << _digit << string(";\n");
-        cout << "Nodes is now: " << nodes.str() << endl;
+        nodes << "\"" << numberProgress << "\"" << string("->") << "\"" << numberProgress << _digit << "\""<< string(";\n");
     }
     numberProgress += _digit;
-    cout << "Numberprogress is now: " << numberProgress << endl;
     
     /* Label string ändern. Hier werden die label der einzelnen Knoten beschrieben */
-    labelString << numberProgress << string(" [label=\"") << _digit << string("\"];\n");
+    labelString << "\"" << numberProgress << "\"" << string(" [label=\"") << _digit << string("\"];\n");
     
-    /* Sollte eine Rufnummer hier enden, so wird die Person als eigener Knoten angefügt */
+    /* Sollte eine Rufnummer hier enden, so wird die Person als eigener Knoten angefügt und mit einem Label versehen*/
     if (_personWithThisNumber != NULL) {
-        nodes << numberProgress << string("->") << _personWithThisNumber->getName() << string(";\n");
-        labelString << _personWithThisNumber->getName() << string(" [label=\"") << _personWithThisNumber->getName() << string("\"];\n");
+        nodes << "\"" << numberProgress << "\"" << string("->") << "\"" << _personWithThisNumber->getValues().at("Vorname") << _personWithThisNumber->getValues().at("Name") << "\"" << string(";\n");
+        labelString << "\"" << _personWithThisNumber->getValues().at("Vorname") << _personWithThisNumber->getValues().at("Name") << "\"" << string(" [label=\"") << _personWithThisNumber->getValues().at("Vorname") << " " << _personWithThisNumber->getValues().at("Name") << string("\"];\n");
     }
     
-    cout <<"Labels:" << labelString.str() << endl;
     for (list<Node*>::iterator i = _nextDigits.begin(); i != _nextDigits.end(); i++ ) {
         (*i)->addToGraphString(nodes, numberProgress, labelString);
     }

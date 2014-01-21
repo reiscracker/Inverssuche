@@ -29,7 +29,7 @@ class Node {
                 
                 /* Enthält einen Zeiger auf ein Person-Objekt, falls die Nummer an diesem Punkt 
                    einer Person gehört */
-		Person* _personWithThisNumber = NULL;
+		Person* _personWithThisNumber;
 
                 /* Findet das Objekt mit der nächsten Ziffer oder legt ein neues an */
 		Node* getNextDigit(char digit);
@@ -47,6 +47,9 @@ class Node {
                 char getDigit();
                 void setDigit(char newDigit);    
                 
+                /* Hängt die eigene Ziffer an den sich aufbauenden Baum der Nummern an und gibt den Baum an alle benachbarten
+                 * Ziffern weiter. Außerdem wird der Knoten und das Label für den gerade erstellten Knoten und eine evtl anhängende
+                 * Person mit dieser Nummer erstellt*/
                 void addToGraphString(stringstream& nodes, string numberProgress, stringstream& labelString);
 };
 

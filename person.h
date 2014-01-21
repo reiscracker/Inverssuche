@@ -20,7 +20,7 @@ class Person {
 	public:
 		void addValue(string key, string value);
 		void printValues();	
-                string getName();
+                map<string, string> getValues();
 };
 
 #endif

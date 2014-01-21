@@ -24,8 +24,6 @@ void userMenu();
 Tree* const tree = new Tree();
 
 int main(int argc, const char* argv[]) {
-	cout << "Programm gestartet" << endl;
-	
 	/* Liste in der die Personen aus der Datei gespeichert werden */
 	list<Person*> personen;
 
@@ -91,6 +89,7 @@ list<Person*> createListFromFile(string filename) {
                 // Sollte eine Nummer nicht gültig sein, so wird diese auch nicht zu einer Person hinzugefügt 
                 if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
                     if (!tree->isNumber(*valuesIterator)) {
+                        // Ungültige Nummer gefunden, springe weiter zum nächsten Wert
                         keysIterator++;
                         valuesIterator++;
                         continue;

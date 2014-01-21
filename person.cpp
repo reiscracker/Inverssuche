@@ -24,7 +24,7 @@ string Person::ausgabe() {
 }
 */
 void Person::addValue(string key, string value) {
-	_values.insert(pair<string, string>(key, value));	
+	_values.insert(pair<string, string>(key, value));
 }
 
 void Person::printValues() {
@@ -35,6 +35,6 @@ void Person::printValues() {
 	}
 }
 
-string Person::getName() {
-    return _values.at("Name");
+map<string, string> Person::getValues() {
+    return _values;
 }

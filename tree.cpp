@@ -17,18 +17,15 @@ bool Tree::isNumber(const string& number) {
     /* Eine Telefonnummer muss mindestens zwei Ziffern beinhalten und darf keine Zeichen, ausser einem
      * '+' am Anfang und Ziffern beinhalten */
     if (number.length() <= 1) {
-//        throw runtime_error("Fehler: Telefonnummer muss mindestens zwei Ziffern enthalten.");
         return false;
     }
     // Erstes Zeichen prüfen
     if ( !isdigit(number.at(0)) && number.at(0) != '+' ) {
-//        throw runtime_error("Fehler: Ungültiges Zeichen in der Telefonnummer.");
         return false;
     }
     // Restliche Zeichen prüfen
     for (int i = 1; i < number.length(); i++) {
         if (!isdigit(number.at(i))) {
-//            throw runtime_error("Fehler: Ungültiges Zeichen in der Telefonnummer.");
             return false;
         }
     }
@@ -87,13 +84,8 @@ void Tree::makeGraph() {
     stringstream nodes, labels;
     string numberProgress;
     
-    // In DOT lässt sich ein + nicht als Zeichen verwenden, also ändern wir + zu p
-    _startingNode->setDigit('p');
-    
     // Jeder Knoten schreibt seine Daten in die Stringstreams nodes und labels
     _startingNode->addToGraphString(nodes, numberProgress, labels);
-    
-    _startingNode->setDigit('+');
     
     /* Die erstellten strings mit der dot-Sprache müssen in eine Datei geschrieben werden */
     ofstream myStream;
@@ -104,8 +96,9 @@ void Tree::makeGraph() {
         cerr << e.what();
     }
     myStream.close();
+    cout << "Generated" << endl;
     system("dot -Tpng graph.tmp -o graph.png");
-    system("rm graph.tmp");
+//    system("rm graph.tmp");
     system("eog graph.png");
     
 }
