@@ -3,8 +3,10 @@
  * Author: Simon Arnold <s0539710@htw-berlin.de>
  *
  * Dieses Programm realisiert eine Inverssuche durch einen Baum von Telefonnummern. Eine Liste von Nummern wird
- * aus einer Datei eingelesen, die Nummern werden anschließend in einen Indexbaum gespeichert. Es ist dann möglich,
- * anhand einer Telefonnummer Name und weitere Telefonnummern des Besitzers der Nummer herauszufinden.
+ * aus einer Datei eingelesen, die Nummern werden anschließend in einen Baum gespeichert, wobei jeder Knoten
+ * des Baumes eine Ziffer in der Telefonnummer darstellt. Es ist dann möglich, anhand einer 
+ * Telefonnummer den Namen und weitere Telefonnummern des Besitzers der Nummer herauszufinden.
+ * Weiterhin erlaubt dieses Programm es, den erstellten Baum als Graphen darzustellen. 
  * */
 using namespace std;
 #include <list>
@@ -14,34 +16,39 @@ using namespace std;
 #include <vector>
 #include "tree.h"
 
-#define FIRSTNUMBERATTRIBUTE 3
-#define LASTNUMBERATTRIBUTE 8
+#define FIRSTNUMBERATTRIBUTE 3  // Der Wert, der in einer Zeile der .csv Datei die erste Telefonnummer enthält
+#define LASTNUMBERATTRIBUTE 8 // Der Wert, der in einer Zeile der .csv Datei die letzte Telefonnummer enthält
 
 list<Person*> createListFromFile(string filename);
 vector<string> readValuesFromLine(string line);
 void userMenu();
 
+/* Globales Objekt der Klasse Tree, die Operationen auf den Baum realisiert */
 Tree* const tree = new Tree();
 
 int main(int argc, const char* argv[]) {
-	/* Liste in der die Personen aus der Datei gespeichert werden */
+    
+	/* Liste erstellen, in der die aus der .csv Datei gelesenen Personen gespeichert werden */
 	list<Person*> personen;
 
-	/* Es muss mindestens eine Datei angegeben sein um diese zu öffnen */
-	if (argc > 1) {
-            cout << "Argument gefunden. Versuche, Datei " << argv[1] << " zu öffnen." << endl;
+	/* Das Programm muss mit einer Datei als Parameter aufgerufen werden*/
+	if (argc == 2) {
+            cout << "Argument gefunden. Lese Datei " << argv[1] << "." << endl;
+            
             try {
+                /* Liest die Personen aus der .csv Datei und erstellt außerdem den Baum */
                 personen = createListFromFile(argv[1]);
             }
             catch (runtime_error e) {
                 cout << e.what() << endl;
-                // An diesem Punkt wurden noch keine Objekte der Liste hinzugefügt, also ist kein delete notwendig 
+                /* Schlägt das Lesen der Datei fehl, wird das Programm beendet*/
                 return 0;
             }
         }
 		
         userMenu();
 
+        /* Der Baum räumt sich selbst auf */
         delete(tree);
         
         /* Hier besteht die Liste und ist mit Person-Objekten gefüllt */
@@ -51,86 +58,96 @@ int main(int argc, const char* argv[]) {
         }
 }
 
-/* Erstellt eine Liste von Person-Objekten aus einer .csv Datei */
+/* Erstellt eine Liste von Person-Objekten aus einer .csv Datei und fügt jede gelesene Telefonnummer
+ * dem Baum der Telefonnummern hinzu.
+ *      @param filename Pfad der zu öffnenden .csv-Datei
+ *      @returns Erstellte Liste von Personen-Objekten */
 list<Person*> createListFromFile(string filename) {
-	list<Person*> personen;
+	
+        list<Person*> personen;
 	ifstream readFile;
 	
-	/* fstream benötigt ein c-style char Array als Variable für den Dateinamen */
 	readFile.open(filename.c_str());
-
 	if (!readFile.is_open()) {
 		throw runtime_error("Error: Datei '" + filename + "' konnte nicht geöffnet werden.\n\tExistiert die Datei und besitzen Sie die nötigen Rechte?");
 	}
 
 	/* Die Datei kann an diesem Punkt gelesen werden
-	 * Erste Zeile mit den Namen der Werte lesen und diese speichern */
+	 * Erste Zeile mit den Attributsbezeichnern der Werte lesen und diese speichern */
 	string line;
 	getline(readFile, line);
 	if (line.empty()) {
-		throw runtime_error("Error: Datei '" + filename + "' enthält keine Keys in der ersten Zeile.");
+		throw runtime_error("Error: Datei '" + filename + "' enthält keine Werte in der ersten Zeile.");
 	}
 	vector<string> keys = readValuesFromLine(line);
 
-	/* Jede Zeile wird gelesen, von readValuesFromFile in ihre einzelnen Werte zerlegt und anschließend als Paare in ein
-        *  Objekt der Klasse Person gespeichert */
+	/* Jede Zeile wird gelesen, von readValuesFromFile in ihre einzelnen Werte zerlegt und 
+         * in ein Objekt der Klasse Person gespeichert */
 	while ( getline(readFile, line) ) {
+            
             Person* newPerson = new Person;
             personen.push_back(newPerson); 	
 
             vector<string> values = readValuesFromLine(line);	
 
-            /* Paare mit den zugehörigen Keys und Werten werden angelegt */
+            /* Werte in die gerade angelegte Person schreiben */
             vector<string>::iterator keysIterator = keys.begin();
             vector<string>::iterator valuesIterator = values.begin();
-            
             while (keysIterator < keys.end() && valuesIterator < values.end()) {
                 
-                // Sollte eine Nummer nicht gültig sein, so wird diese auch nicht zu einer Person hinzugefügt 
-                if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
+                /* Wenn der Wert als Nummer angesehen werden soll (zwischen FIRSTNUMBERATTRIBUTE und LASTNUMBERATTRIBUTE),
+                 * wird die Nummer auf Gültigkeit geprüft */
+                if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && 
+                    valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
+                    
                     if (!tree->isNumber(*valuesIterator)) {
-                        // Ungültige Nummer gefunden, springe weiter zum nächsten Wert
+                        /* Ungültige Nummer gefunden, springe weiter zum nächsten Wert */
                         keysIterator++;
                         valuesIterator++;
                         continue;
                     }
                 }
                 
-                // Datenpaar zum aktuellen Personenobjekt hinzufügen
+                /* Attributsname - Wert Paar zum Objekt hinzufügen */
                 personen.back()->addValue(*keysIterator, *valuesIterator);
 
-               /* Jede Nummer wird mit dem aktuellen Personen-Objekt verknüpft.
-                * Eigentlich ist dieses Programm flexibel, was die Werte in der .csv Datei anbelangt.
-                * Um die Telefonnummern zu identifizieren, muss allerdings angenommen werden, dass 
-                * die Werte zwischen FIRSTNUMBERATTRIBUTE und LASTNUMBERATTRIBUTE der .csv Datei Telefonnummern sind */
+               /* Wenn der gerade gelesene Wert als Nummer angesehen werden soll, wird er
+                * außerdem zum Baum hinzugefügt */
                if (valuesIterator >= values.begin() + FIRSTNUMBERATTRIBUTE && valuesIterator <= values.begin() + LASTNUMBERATTRIBUTE) {
                    tree->registerNumber(*valuesIterator, personen.back());
                }
+                
                keysIterator++;
                valuesIterator++;
-            }
+            } // while (keysIterator < keys.end() && valuesIterator < values.end())
             
-	}	
+	} // while getline
 	readFile.close();
 	return personen;
 }
 
-/* Findet die Stellen, an denen ein Komma steht, sodass die Zeile dort in die einzelnen Werte aufgeteilt werden kann */
+/* Findet die Positionen der Kommata in einer Zeile und extrahiert die Werte zwischen diesen.
+ *      @param line Zeile, aus der die Werte extrahiert werden sollen
+ *      @returns vector<String> mit den extrahierten Werten */
 vector<string> readValuesFromLine(string line) {
+    
 	vector<string> values;	
 	int commaPosition = 0, valueStartPosition = 0;
 	
+        /* Solange noch ein weiteres Komma gefunden werden kann */
 	while ( (commaPosition = line.find(",", commaPosition)) != -1 ) {
-		/* Extrahiert die Werte und speichert sie */
-		values.push_back(line.substr(valueStartPosition, commaPosition - valueStartPosition));	
+		
+                /* Wert zwischen letztem und aktuell gefundenen Komma extrahieren */
+                values.push_back(line.substr(valueStartPosition, commaPosition - valueStartPosition));	
 	
-		/* Der Anfang des nächsten Wertes muss festgehalten werden */
+		/* Position des aktuell gefundenen Kommas festhalten */
 		valueStartPosition = commaPosition + 1;
-
 		commaPosition++;
 	}
-	/* Letzter Wert, der aufgrund des fehlenden Kommas nicht gefunden wird, wird hinzugefügt */
+        
+	/* Letzten Wert, der aufgrund des fehlenden Kommas nicht gefunden wird, hinzufügen */
 	values.push_back(line.substr(valueStartPosition, line.size() - valueStartPosition));
+        
 	return 	values;
 }
 

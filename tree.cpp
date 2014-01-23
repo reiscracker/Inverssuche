@@ -19,11 +19,13 @@ bool Tree::isNumber(const string& number) {
     if (number.length() <= 1) {
         return false;
     }
-    // Erstes Zeichen prüfen
+    
+    /* Erstes Zeichen prüfen */
     if ( !isdigit(number.at(0)) && number.at(0) != '+' ) {
         return false;
     }
-    // Restliche Zeichen prüfen
+    
+    /* Restliche Zeichen prüfen */
     for (int i = 1; i < number.length(); i++) {
         if (!isdigit(number.at(i))) {
             return false;
@@ -33,24 +35,19 @@ bool Tree::isNumber(const string& number) {
     return true;
 }
 
-/* Die Nummer wird "normalisiert", also in das E.164-Format überführt, wobei:
-     *  - Mit + beginnende Nummern bereits als im E.164-Format angenommen werden 
-     *  - Eine führende 0 durch +49 ersetzt wird
-     *  - Nummern mit anderen, führenden Ziffern durch +49 30 ergänzt werden */
+
 void Tree::normalizeNumber(string &number) {
     
     if (!isNumber(number)) {
         throw runtime_error("Fehler: Nummer ist nicht gültig.");
     }
+    
     if (number.at(0) == '0') {
-        cout << "Normalizing " << number << " to ";
         number.replace(0, 1, "+49");
-        cout << number << endl;
     }
+    
     else if (isdigit(number.at(0))) {
-        cout << "Normalizing " << number << " to ";
         number.insert(0, "+4930");
-        cout << number << endl;
     }
     
     /* Sollte die Nummer nun mehr als 15 Zeichen beinhalten, wird sie abgewiesen */
@@ -84,7 +81,7 @@ void Tree::makeGraph() {
     stringstream nodes, labels;
     string numberProgress;
     
-    // Jeder Knoten schreibt seine Daten in die Stringstreams nodes und labels
+    /* Jeder Knoten schreibt seine Daten in die Stringstreams nodes und labels */
     _startingNode->addToGraphString(nodes, numberProgress, labels);
     
     /* Die erstellten strings mit der dot-Sprache müssen in eine Datei geschrieben werden */
@@ -96,7 +93,7 @@ void Tree::makeGraph() {
         cerr << e.what();
     }
     myStream.close();
-    cout << "Generated" << endl;
+    
     system("dot -Tpng graph.tmp -o graph.png");
     system("rm graph.tmp");
     system("eog graph.png");

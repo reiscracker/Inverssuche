@@ -18,8 +18,15 @@ class Person {
 		map<string, string> _values;
 
 	public:
+                /* Fügt einen Wert der Liste der Werte hinzu 
+                        @param key Schlüssel des Attributs
+                        @param value Wert des Attributs
+                 */
 		void addValue(string key, string value);
-		void printValues();	
+		
+                /* Gibt die gespeicherten Attribute des Objekts wohlformatiert aus */
+                void printValues();
+                
                 map<string, string>* getValues();
 };
 
