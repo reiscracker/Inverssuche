@@ -98,7 +98,7 @@ void Tree::makeGraph() {
     myStream.close();
     cout << "Generated" << endl;
     system("dot -Tpng graph.tmp -o graph.png");
-//    system("rm graph.tmp");
+    system("rm graph.tmp");
     system("eog graph.png");
     
 }
