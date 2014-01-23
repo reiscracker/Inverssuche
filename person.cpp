@@ -35,6 +35,7 @@ void Person::printValues() {
 	}
 }
 
-map<string, string> Person::getValues() {
-    return _values;
+map<string, string>* Person::getValues() {
+    
+    return &_values;
 }
